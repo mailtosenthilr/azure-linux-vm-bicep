@@ -1,0 +1,7 @@
+@"
+main.json
+*.pem
+*.key
+.env
+.vscode/
+"@ | Set-Content .gitignore
