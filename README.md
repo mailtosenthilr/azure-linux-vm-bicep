@@ -1,4 +1,3 @@
-@"
 # Azure Linux VM Bicep Lab
 
 Beginner Azure Infrastructure as Code lab using:
