@@ -24,6 +24,19 @@ param tags object
 @description('Name of the private network interface.')
 param nicName string
 
+@description('Name of the Linux virtual machine.')
+param vmName string
+
+@description('Size of the Linux virtual machine.')
+param vmSize string
+
+@description('Administrator username for the Linux virtual machine.')
+param adminUsername string
+
+@description('SSH public key used for Linux authentication.')
+@secure()
+param sshPublicKey string
+
 var existingSubnetNsgName = 'vnet-iac-westus2-lab01-snet-app-nsg-westus2'
 
 resource existingSubnetNsg 'Microsoft.Network/networkSecurityGroups@2025-01-01' existing = {
@@ -52,9 +65,24 @@ module nic './modules/nic.bicep' = {
     tags: tags
   }
 }
+
+module linuxVm './modules/linux-vm.bicep' = {
+  name: 'deploy-linux-vm-${environment}'
+  params: {
+    vmName: vmName
+    location: location
+    vmSize: vmSize
+    adminUsername: adminUsername
+    sshPublicKey: sshPublicKey
+    nicId: nic.outputs.nicId
+    tags: tags
+  }
+}
 output deployedVnetId string = network.outputs.vnetId
 output deployedVnetName string = network.outputs.vnetName
 output deployedSubnetId string = network.outputs.subnetId
 output preservedSubnetNsgId string = existingSubnetNsg.id
 output deployedNicId string = nic.outputs.nicId
 output deployedNicName string = nic.outputs.nicName
+output deployedVmId string = linuxVm.outputs.vmId
+output deployedVmName string = linuxVm.outputs.vmName

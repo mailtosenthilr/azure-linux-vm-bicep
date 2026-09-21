@@ -11,6 +11,12 @@ param subnetAddressPrefix = '10.20.1.0/24'
 
 param nicName = 'nic-linux-iac-amer-lab01'
 
+param vmName = 'vm-linux-iac-amer-lab01'
+param vmSize = 'Standard_B1ls'
+param adminUsername = 'azureadmin'
+
+param sshPublicKey = readEnvironmentVariable('SSH_PUBLIC_KEY')
+
 param tags = {
   Tower: 'INFRA'
   'Created By': 'Senthilkumar Ranganathan'
