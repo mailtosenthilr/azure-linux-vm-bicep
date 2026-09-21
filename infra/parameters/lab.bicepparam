@@ -9,6 +9,8 @@ param vnetAddressPrefix = '10.20.0.0/16'
 param subnetName = 'snet-app'
 param subnetAddressPrefix = '10.20.1.0/24'
 
+param nicName = 'nic-linux-iac-amer-lab01'
+
 param tags = {
   Tower: 'INFRA'
   'Created By': 'Senthilkumar Ranganathan'

@@ -1,41 +1,60 @@
 targetScope = 'resourceGroup'
 
-metadata description = 'Orchestrates the Azure Linux VM lab infrastructure.'
-
-@description('Azure region for the lab resources.')
+@description('Azure region used for the lab resources.')
 param location string
 
-@description('Deployment environment.')
+@description('Deployment environment such as lab, dev, test, or prod.')
 param environment string
 
-@description('Virtual network name.')
+@description('Name of the virtual network.')
 param vnetName string
 
-@description('Virtual network address space.')
+@description('Address space assigned to the virtual network.')
 param vnetAddressPrefix string
 
-@description('Application subnet name.')
+@description('Name of the application subnet.')
 param subnetName string
 
-@description('Application subnet address range.')
+@description('Address prefix assigned to the application subnet.')
 param subnetAddressPrefix string
 
-@description('Common tags applied to supported resources.')
+@description('Required organizational tags.')
 param tags object
+
+@description('Name of the private network interface.')
+param nicName string
+
+var existingSubnetNsgName = 'vnet-iac-westus2-lab01-snet-app-nsg-westus2'
+
+resource existingSubnetNsg 'Microsoft.Network/networkSecurityGroups@2025-01-01' existing = {
+  name: existingSubnetNsgName
+}
 
 module network './modules/network.bicep' = {
   name: 'deploy-network-${environment}'
   params: {
-    location: location
     vnetName: vnetName
+    location: location
     vnetAddressPrefix: vnetAddressPrefix
     subnetName: subnetName
     subnetAddressPrefix: subnetAddressPrefix
+    subnetNsgId: existingSubnetNsg.id
     tags: tags
   }
 }
 
-output virtualNetworkName string = network.outputs.vnetName
-output virtualNetworkId string = network.outputs.vnetId
-output applicationSubnetName string = network.outputs.subnetName
-output applicationSubnetId string = network.outputs.subnetId
+module nic './modules/nic.bicep' = {
+  name: 'deploy-nic-${environment}'
+  params: {
+    nicName: nicName
+    location: location
+    subnetId: network.outputs.subnetId
+    tags: tags
+  }
+}
+output deployedVnetId string = network.outputs.vnetId
+output deployedVnetName string = network.outputs.vnetName
+output deployedSubnetId string = network.outputs.subnetId
+output preservedSubnetNsgId string = existingSubnetNsg.id
+output deployedNicId string = nic.outputs.nicId
+output deployedNicName string = nic.outputs.nicName
