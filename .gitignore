@@ -1,7 +1,5 @@
-@"
-main.json
-*.pem
-*.key
+*.json
+!bicepconfig.json
+*.pem**.key
 .env
 .vscode/
-"@ | Set-Content .gitignore
