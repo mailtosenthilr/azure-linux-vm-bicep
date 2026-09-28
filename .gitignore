@@ -3,3 +3,5 @@
 *.pem**.key
 .env
 .vscode/
+*.xlsx
+*.docx
